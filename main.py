@@ -53,7 +53,6 @@ Taylor: Ugh, this is so hard! I love the idea of immersing ourselves in Kyoto's 
         conversation_state = models.ConversationState.model_validate_json(response)
         ## go deeper into the conversation IFF we need to track preferences
         if conversation_state.state == 'question':
-            print('question!')
             preferences = {} # user:preference KVs
             for user in users:
                 preference_prompt = models.UserPreferences.build_prompt(user=user, conversation=conversation)
@@ -68,8 +67,9 @@ Taylor: Ugh, this is so hard! I love the idea of immersing ourselves in Kyoto's 
             response = claude.prompt(response_prompt)
             print(response)
         else:
-            print('no question!')
-            conversation_state.build_response_prompt(users=users, conversation=conversation)
+            print(conversation_state.state)
+            response_prompt = conversation_state.build_response_prompt(users=users, conversation=conversation)
+            response = claude.prompt(response_prompt)
             print(response)
         print('success!')
     except Exception as e:

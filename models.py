@@ -96,7 +96,7 @@ class ResearchPath(BaseModel):
 
 ## reads the conversation, reads the user preferences, reads the fact history
 class ConversationState(BaseModel):
-    state: str = Field(description="Identifies the state of the conversation. Choose one value from this list: ['wait', 'research', 'question', 'recommend']")
+    state: str = Field(description="Identifies the state of the conversation. Choose one value from this list: ['wait', 'research', 'question', 'recommend']. Choose wait if last message is a user talking to another user, research if there's a pointed question you need to answer, question if there is indecision and/or you need to move conversation toward recommendation, and recommendation when everyone is aligned.")
     queries: list[str] = Field(description="Identifes the latest queries made by users since you last responded, the travel agent (only one not in list of users in <users> XML tags), so you can respond.")
     disengaged: list[str] = Field(description="Identify users who have not participated much in the conversation.")
     objectors: list[str] = Field(description="Identify users who have expressed strong opinions against certain destinations or activities.")
