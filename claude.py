@@ -1,7 +1,10 @@
 import anthropic
+import dotenv
+import os
 import re
 
-ANTHROPIC_API_KEY = "" # Put your API key here!
+dotenv.load_dotenv()
+ANTHROPIC_API_KEY =  str(os.getenv("ANTHROPIC"))
 DEFAULT_MODEL = "claude-3-haiku-20240307"
 
 CLIENT = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)

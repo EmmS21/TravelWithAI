@@ -65,41 +65,31 @@ class ResearchPath(BaseModel):
     response_prompt: ClassVar[PromptModel] = PromptModel(
         role="You are an experienced travel agent with deep customer empathy and a keen intuition for what people want despite whatever indecision holds them back. You are a part of a group chat where friends are discussing possible travel plans and your role is to move the conversation forward to break indecision.",
         task="Your task is to take the facts provided in <facts> XML tags and user preferences in <preferences> XML tags above and return a response designed to provide as much information as possible to the group. Your response should briefly summarize the user preferences in a single, concise sentence to set expectations for the new facts. Then provide the facts in the form of recommendations and suggestions.",
-        flavor="Skip the preamble. Strive for simplicity and clarity. Use natural sounding and conversational language. Avoid slang or jargon while retaining human sounding langauge so you do not come across as a boomer."
+        flavor="Skip the preamble. Strive for simplicity and clarity. Use natural sounding and conversational language. Avoid slang, jargon, or other colloquialisms that make you sound like an aging baby boomer. Be concise, keep your messages short, and get to the point. Use data-driven examples wherever possible and bullets to organize information. Start your response with a a single specific and concrete recommendation based on user preferences, substantiate with more options & facts, and end the message by asking for a pulse check on the group's decision."
     )
 
-    # specify the type of prompt
     @classmethod
-    def build_prompt(self, *, preferences: UserPreferences, type: Literal['research', 'response']) -> str:
-        #copypasta of preferences & facts
-        self.facts = [
-"Scottsdale, AZ and the greater Phoenix area have over 200 golf courses, a vibrant bar and restaurant scene, and reliable warm/dry weather in Nov/Dec.",
-"Miami and other South Florida cities offer warm beach weather, a range of active pursuits, diverse entertainment and dining options, and accessibility from many airports.",
-"San Diego boasts great golf, food and craft beer scene, perfect weather and plenty of outdoor activities, while being a bit cooler than desert or tropical locales.",
-"If members are open to international travel, Los Cabos, Mexico could fit the budget and combine beach/golf resorts, vibrant nightlife, and cultural activities.",
-"Within the given budget, these destinations and others could offer Airbnb options from condos to beach houses, to fit the group's size and preferences."
-]
-        if type == 'research':
-            schema = build_schema(self.model_json_schema())
-            prompt = f"""
-                Preferences: <preferences>{preferences}</preferences>
-                \n{self.research_prompt.role}
-                \n{self.research_prompt.task}
-                Schema: <schema>{schema}</schema>
-                \n{self.research_prompt.flavor}
-                """
-            return prompt
-        if type == 'response' and self.facts:
-            prompt = f"""
-                Preferences: <preferences>{preferences}</preferences>
-                Facts: <facts>{self.facts}</facts>
-                \n{self.response_prompt.role}
-                \n{self.response_prompt.task}
-                \n{self.response_prompt.flavor}
-                """
-            return prompt       
-        else: return "ERROR: no new facts to provide a substantive response." 
+    def build_research_prompt(self, *, preferences: UserPreferences) -> str:
+        schema = build_schema(self.model_json_schema())
+        prompt = f"""
+            Preferences: <preferences>{preferences}</preferences>
+            \n{self.research_prompt.role}
+            \n{self.research_prompt.task}
+            Schema: <schema>{schema}</schema>
+            \n{self.research_prompt.flavor}
+            """
+        return prompt
 
+    def build_response_prompt(self, *, preferences:UserPreferences) -> str:
+        prompt = f"""
+            Preferences: <preferences>{preferences}</preferences>
+            Facts: <facts>{self.facts}</facts>
+            \n{self.response_prompt.role}
+            \n{self.response_prompt.task}
+            \n{self.response_prompt.flavor}
+            """
+        return prompt      
+        
     ## TODO: leave to @Emmanuel for integration with Langchain
     def update_history(self, new_fact: list[str]) -> None:
         self.historical + new_fact
