@@ -1,7 +1,7 @@
 import anthropic
 import re
 
-ANTHROPIC_API_KEY = "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" # Put your API key here!
+ANTHROPIC_API_KEY = "" # Put your API key here!
 DEFAULT_MODEL = "claude-3-haiku-20240307"
 
 CLIENT = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
